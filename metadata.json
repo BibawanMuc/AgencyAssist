@@ -1,0 +1,9 @@
+
+{
+  "name": "PX-AIssitent",
+  "description": "An all-in-one AI-powered content creation suite featuring chatbots, thumbnail generation, storyboarding, image creation, and video production.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
