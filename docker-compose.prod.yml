@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  proxy-netz:
+    external: true
+
 services:
   app:
     container_name: px-aissitent-app
@@ -12,5 +16,7 @@ services:
     restart: always
     ports:
       - "${APP_PORT:-3000}:80"
+    networks:
+      - proxy-netz
     env_file:
       - .env
