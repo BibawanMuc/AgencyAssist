@@ -28,7 +28,7 @@ This guide explains how to deploy the **PX-AIssitent** application on a Hostinge
    ```env
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your-anon-key
-   APP_PORT=3000   # Internal Docker port (default)
+   APP_PORT=3005   # Internal Docker port (use 3005 or any free port)
    ```
 
 3. **Run Installation**
@@ -42,7 +42,7 @@ This guide explains how to deploy the **PX-AIssitent** application on a Hostinge
 
 ## 2. Nginx Proxy Manager Configuration
 
-Since the app runs inside a Docker container on port `3000` (by default), you need to expose it to the internet using Nginx Proxy Manager.
+Since the app runs inside a Docker container, you need to expose it to the internet using Nginx Proxy Manager.
 
 1. **Log in** to your Nginx Proxy Manager Admin Interface (usually `http://your-ip:81`).
 2. Go to **Hosts** -> **Proxy Hosts**.
@@ -50,15 +50,19 @@ Since the app runs inside a Docker container on port `3000` (by default), you ne
 4. **Details Tab**:
    - **Domain Names**: `your-app.domain.com` (e.g., `app.px-agency.com`)
    - **Scheme**: `http`
-   - **Forward Hostname / IP**: `px-aissitent-app` (This is the container name defined in `docker-compose.prod.yml`. Docker DNS resolves this automatically if they are in the same network, otherwise use your VPS internal IP like `172.17.0.1` or the specific docker network IP).
-   - **Forward Port**: `80` (The internal port *inside* the container is 80, served by Nginx).
-   - **Block Common Exploits**: Enable.
+   
+   **Option A: Host IP Method (Most Reliable)**
+   Use this if NPM runs in a different Docker network than your app (common scenario).
+   - **Forward Hostname / IP**: `172.17.0.1` (Docker Host Gateway IP) OR your VPS Public IP.
+   - **Forward Port**: `3005` (The APP_PORT you set in .env).
 
-   > **Note on Networking:** If NPM is in a separate Docker network, you might need to add `px-aissitent-app` to that network or use the Host IP address and the exposed port `3000`.
-   >
-   > **Recommended (Host IP Method):**
-   > - **Forward Hostname / IP**: `host.docker.internal` (if enabled) OR your VPS Public IP.
-   > - **Forward Port**: `3000` (The port mapped in `docker-compose.prod.yml`).
+   **Option B: Container Name Method**
+   Use this ONLY if NPM and App are in the SAME Docker network.
+   - **Forward Hostname / IP**: `px-aissitent-app`
+   - **Forward Port**: `80` (Internal container port).
+
+   - **Block Common Exploits**: Enable.
+   - **Websockets Support**: Enable.
 
 5. **SSL Tab**:
    - **SSL Certificate**: Request a new Let's Encrypt certificate.
@@ -88,9 +92,15 @@ docker restart px-aissitent-app
 
 ---
 
-## Architecture Internal
+## Troubleshooting
 
-- **Container**: `px-aissitent-app`
-- **Internal Server**: Nginx (serving built static files) -> Port 80 (Internal)
-- **Exposed Port**: 3000 (External -> mapped to Internal 80)
-- **Env**: Variables are baked into the build or injected at runtime.
+### 502 Bad Gateway / OpenResty Error
+
+This usually means Nginx Proxy Manager cannot reach your app container.
+
+**Fix:**
+1. Check if the container is running:
+   ```bash
+   docker ps
+   ```
+2. If it is running, the issue is likely networking. In Nginx Proxy Manager, change the **Forward Hostname / IP** to `172.17.0.1` and the **Forward Port** to `3005` (or whatever you set `APP_PORT` to).
