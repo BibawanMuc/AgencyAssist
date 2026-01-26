@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Language, translations } from '../translations';
 import { saveChatSession, getChatSessions, deleteChatSession } from '../src/services/supabase-db';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface ChatPageProps {
   language: Language;
@@ -393,7 +394,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
                       ? 'bg-indigo-600 text-white rounded-tr-none'
                       : 'bg-slate-800/50 text-slate-200 rounded-tl-none border border-slate-700/50 backdrop-blur-sm'
                       }`}>
-                      {msg.text}
+                      {msg.role === 'user' ? (
+                        msg.text
+                      ) : (
+                        <MarkdownRenderer content={msg.text} />
+                      )}
                     </div>
                   </div>
                 </div>
