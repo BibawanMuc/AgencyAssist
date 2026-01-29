@@ -68,7 +68,9 @@ The app is now part of the `proxy-netz` Docker network. You can connect to it us
 
 **Update Application:**
 ```bash
+git stash
 git pull origin main
+chmod +x install.sh
 ./install.sh
 ```
 
