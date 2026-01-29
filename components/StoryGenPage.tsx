@@ -140,7 +140,7 @@ const StoryGenPage: React.FC<StoryGenPageProps> = ({ language }) => {
 
   const startNewProject = () => {
     const newSession: StoryboardSession = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       title: 'Untitled Project',
       concept: '',
       targetDuration: '',
