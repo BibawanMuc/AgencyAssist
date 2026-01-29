@@ -1,6 +1,6 @@
 # Deployment Guide for Hostinger VPS
 
-This guide explains how to deploy the **PX-AIssitent** application on a Hostinger VPS using Docker and Nginx Proxy Manager.
+This guide explains how to deploy the **PX-AIssistent** application on a Hostinger VPS using Docker and Nginx Proxy Manager.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ This guide explains how to deploy the **PX-AIssitent** application on a Hostinge
    chmod +x install.sh
    ./install.sh
    ```
-   This will build the Docker image and start the container `px-aissitent-app` connected to the `proxy-netz` network.
+   This will build the Docker image and start the container `px-aissistent-app` connected to the `proxy-netz` network.
 
 ---
 
@@ -51,7 +51,7 @@ The app is now part of the `proxy-netz` Docker network. You can connect to it us
 4. **Details Tab**:
    - **Domain Names**: `your-app.domain.com` (e.g., `app.px-agency.com`)
    - **Scheme**: `http`
-   - **Forward Hostname / IP**: `px-aissitent-app`
+   - **Forward Hostname / IP**: `px-aissistent-app`
    - **Forward Port**: `80`
    - **Block Common Exploits**: Enable.
    - **Websockets Support**: Enable.
@@ -74,14 +74,14 @@ git pull origin main
 
 **Restart:**
 ```bash
-docker restart px-aissitent-app
+docker restart px-aissistent-app
 ```
 
 ---
 
 ## Architecture Internal
 
-- **Container**: `px-aissitent-app`
+- **Container**: `px-aissistent-app`
 - **Network**: `proxy-netz` (External)
 - **Internal Port**: 80 (Served by Nginx inside container)
 - **Proxy**: NPM connects directly to container on Port 80

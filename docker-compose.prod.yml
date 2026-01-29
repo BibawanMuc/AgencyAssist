@@ -6,7 +6,7 @@ networks:
 
 services:
   app:
-    container_name: px-aissitent-app
+    container_name: px-aissistent-app
     build:
       context: .
       dockerfile: Dockerfile

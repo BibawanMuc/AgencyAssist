@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, language
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-            PX-AIssitent
+            PX-AIssistent
           </h1>
         </div>
 

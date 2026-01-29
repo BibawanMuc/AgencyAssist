@@ -19,8 +19,8 @@ export const translations = {
     },
     dashboard: {
       heroBadge: 'Empowering Next-Gen Creators',
-      heroTitle: 'Unified PX-AIssitent Protocol.',
-      heroDesc: 'Welcome to PX-AIssitent. A comprehensive suite of surgical-grade AI tools designed to transform concepts into production-ready assets instantly.',
+      heroTitle: 'Unified PX-AIssistent Protocol.',
+      heroDesc: 'Welcome to PX-AIssistent. A comprehensive suite of surgical-grade AI tools designed to transform concepts into production-ready assets instantly.',
       secureEnv: 'Secure Environment',
       enginePowered: 'Gemini 3 Powered',
       toolEcosystem: 'Tool Ecosystem',
@@ -120,8 +120,8 @@ export const translations = {
     },
     dashboard: {
       heroBadge: 'Unterstützung für Creator der nächsten Generation',
-      heroTitle: 'Einheitliches PX-AIssitent Protokoll.',
-      heroDesc: 'Willkommen bei PX-AIssitent. Eine umfassende Suite chirurgisch präziser KI-Tools, die Konzepte sofort in produktionsreife Assets verwandeln.',
+      heroTitle: 'Einheitliches PX-AIssistent Protokoll.',
+      heroDesc: 'Willkommen bei PX-AIssistent. Eine umfassende Suite chirurgisch präziser KI-Tools, die Konzepte sofort in produktionsreife Assets verwandeln.',
       secureEnv: 'Sichere Umgebung',
       enginePowered: 'Gemini 3 Power',
       toolEcosystem: 'Tool-Ökosystem',
@@ -221,8 +221,8 @@ export const translations = {
     },
     dashboard: {
       heroBadge: 'Soutenir les créateurs de nouvelle génération',
-      heroTitle: 'Protocole unifié PX-AIssitent.',
-      heroDesc: 'Bienvenue sur PX-AIssitent. Une suite complète d\'outils d\'IA de précision conçus pour transformer instantanément vos concepts en actifs prêts pour la production.',
+      heroTitle: 'Protocole unifié PX-AIssistent.',
+      heroDesc: 'Bienvenue sur PX-AIssistent. Une suite complète d\'outils d\'IA de précision conçus pour transformer instantanément vos concepts en actifs prêts pour la production.',
       secureEnv: 'Environnement sécurisé',
       enginePowered: 'Propulsé par Gemini 3',
       toolEcosystem: 'Écosystème d\'outils',
@@ -322,7 +322,7 @@ export const translations = {
     },
     dashboard: {
       heroBadge: 'Empoderando a los creadores de nueva generación',
-      heroTitle: 'Protocolo unificado PX-AIssitent.',
+      heroTitle: 'Protocolo unificado PX-AIssistent.',
       heroDesc: 'Bienvenido a PX-AIssitent. Una suite completa de herramientas de IA de grado quirúrgico diseñadas para transformar conceptos en activos listos para la producción.',
       secureEnv: 'Entorno seguro',
       enginePowered: 'Con tecnología Gemini 3',

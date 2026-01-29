@@ -64,7 +64,7 @@ const SignupPage: React.FC = () => {
             Konto erstellen
           </h2>
           <p className="mt-2 text-sm text-slate-400">
-            Registrieren Sie sich für PX-AIssitent
+            Registrieren Sie sich für PX-AIssistent
           </p>
         </div>
 

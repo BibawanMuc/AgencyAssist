@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-APP_NAME="px-aissitent-app"
+APP_NAME="px-aissistent-app"
 DOCKER_COMPOSE_FILE="docker-compose.prod.yml"
 
 echo "🚀 Starting installation for $APP_NAME..."

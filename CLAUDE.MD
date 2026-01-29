@@ -1,8 +1,8 @@
-# PX-AIssitent - Claude Development Guide
+# PX-AIssistent - Claude Development Guide
 
 ## Projektübersicht
 
-**PX-AIssitent** ist eine professionelle All-in-One Content Creation Suite, die Google Gemini 3 und Veo 3.1 APIs nutzt, um multimodale KI-Workflows für Agenturen bereitzustellen.
+**PX-AIssistent** ist eine professionelle All-in-One Content Creation Suite, die Google Gemini 3 und Veo 3.1 APIs nutzt, um multimodale KI-Workflows für Agenturen bereitzustellen.
 
 ### Kernfunktionalität
 - **ChatBots**: 4 spezialisierte AI-Assistenten (General, DevX, Content Strategist, Media Analyst)
@@ -72,7 +72,7 @@ Das Projekt wurde erfolgreich von einer lokalen IndexedDB/localStorage-Lösung �
 ## Projektstruktur
 
 ```
-D:\PX AgenturApp\PROJECT\CODE\260109-DL-px-aissitent\
+D:\PX AgenturApp\PROJECT\CODE\260109-DL-px-aissistent\
 ├── src/
 │   ├── config/
 │   │   └── supabase.ts                 # Supabase Client Init
