@@ -40,15 +40,15 @@ export const createChat = (systemInstruction: string, model: string = 'gemini-3-
 };
 
 export const generateImage = async (
-  prompt: string, 
-  model: string = 'gemini-2.5-flash-image', 
+  prompt: string,
+  model: string = 'gemini-2.5-flash-image',
   aspectRatio: string = "1:1",
   imageRefs?: { data: string, mimeType: string }[]
 ) => {
   const ai = getAI();
-  
+
   const parts: any[] = [];
-  
+
   if (imageRefs && imageRefs.length > 0) {
     imageRefs.forEach(ref => {
       parts.push({
@@ -59,7 +59,7 @@ export const generateImage = async (
       });
     });
   }
-  
+
   parts.push({ text: prompt });
 
   const imageConfig: any = {
@@ -96,14 +96,14 @@ export const generateImage = async (
 };
 
 export const generateVideo = async (
-  prompt: string, 
+  prompt: string,
   model: string = 'veo-3.1-fast-generate-preview',
   imageRef?: { data: string, mimeType: string },
   aspectRatio: '16:9' | '9:16' | '1:1' = '16:9',
   resolution: '720p' | '1080p' = '720p'
 ) => {
   const ai = getAI();
-  
+
   const finalPrompt = prompt || (model.includes('fast') ? "Cinematic high-quality video" : "");
   if (!finalPrompt && !model.includes('fast')) {
     throw new Error("PRO_MODEL_REQUIRES_PROMPT");
@@ -137,14 +137,19 @@ export const generateVideo = async (
       operation = await ai.operations.getVideosOperation({ operation });
     }
 
+    if (operation.error) {
+      throw new Error(`VIDEO_GENERATION_FAILED: ${operation.error.message || 'Unknown API Error'}`);
+    }
+
     const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
     if (!downloadLink) {
-      throw new Error("VIDEO_URI_NOT_FOUND");
+      console.error("Video Generation Operation Result:", JSON.stringify(operation, null, 2));
+      throw new Error("VIDEO_URI_NOT_FOUND: API returned success but no video URI.");
     }
-    
+
     const apiKey = process.env.API_KEY;
     const response = await fetch(`${downloadLink}&key=${apiKey}`);
-    
+
     if (!response.ok) {
       throw new Error(`VIDEO_DOWNLOAD_FAILED: ${response.status}`);
     }
@@ -161,12 +166,12 @@ export const generateVideo = async (
 
 export const generateShotlist = async (concept: string, assetsInfo: string, targetDuration?: number, numShots?: number): Promise<{ sceneDescription: string, frameDescription: string, voiceText: string, duration: number }[]> => {
   const ai = getAI();
-  const durationInstruction = targetDuration 
-    ? `The total duration of all shots combined MUST NOT exceed ${targetDuration} seconds.` 
+  const durationInstruction = targetDuration
+    ? `The total duration of all shots combined MUST NOT exceed ${targetDuration} seconds.`
     : `Estimate a reasonable total duration for this concept based on its complexity.`;
-  
-  const countInstruction = numShots 
-    ? `You MUST generate EXACTLY ${numShots} shots.` 
+
+  const countInstruction = numShots
+    ? `You MUST generate EXACTLY ${numShots} shots.`
     : `Generate a suitable number of shots (typically 4-8) to cover the narrative arc.`;
 
   try {
