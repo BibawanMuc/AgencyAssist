@@ -15,10 +15,13 @@ import {
   Eraser,
   Check,
   Brush,
-  Undo
+  Undo,
+  Camera
 } from 'lucide-react';
+import WebcamCapture from './WebcamCapture';
 import { ImageModel } from '../types';
 import { uploadBase64Image, generateAssetPath } from '../src/services/supabase-storage';
+import { saveGeneratedImage } from '../src/services/supabase-db';
 
 interface ImageGenPageProps {
 }
@@ -59,8 +62,38 @@ const ImageGenPage: React.FC<ImageGenPageProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-
+  const [showWebcam, setShowWebcam] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+
+
+  const forceDownload = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("Download failed", e);
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleWebcamCapture = (base64Image: string) => {
+    // base64Image comes as data:image/png;base64,...
+    const parts = base64Image.split(',');
+    const mime = parts[0].split(':')[1].split(';')[0];
+    const data = parts[1];
+
+    setSourceImage({ data, mimeType: mime });
+    setShowWebcam(false);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -113,6 +146,14 @@ const ImageGenPage: React.FC<ImageGenPageProps> = () => {
         // Upload to Supabase Storage
         const path = generateAssetPath('images', 'png');
         const publicUrl = await uploadBase64Image(generatedDataUri, path);
+
+        // Save to DB
+        await saveGeneratedImage({
+          prompt: finalPrompt,
+          style: selectedStyle.id,
+          imageUrl: publicUrl,
+          config: { model, aspectRatio, isInpaint: !!editImage }
+        });
 
         setResults([{ url: publicUrl, prompt: finalPrompt }, ...results]);
 
@@ -345,14 +386,34 @@ const ImageGenPage: React.FC<ImageGenPageProps> = () => {
                       </div>
                     </div>
                   ) : (
-                    <button onClick={() => fileInputRef.current?.click()} className="w-full py-8 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center gap-2 text-slate-600 hover:text-indigo-400 hover:border-indigo-500/50 transition-all bg-slate-800/20 group">
-                      <Upload className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Upload Image</span>
-                    </button>
+                    <div className="flex flex-col gap-3">
+                      <button onClick={() => fileInputRef.current?.click()} className="w-full py-6 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center gap-2 text-slate-600 hover:text-indigo-400 hover:border-indigo-500/50 transition-all bg-slate-800/20 group">
+                        <Upload className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Upload Image</span>
+                      </button>
+
+                      <div className="relative flex items-center gap-2">
+                        <div className="h-[1px] bg-slate-800 flex-1"></div>
+                        <span className="text-[9px] font-black text-slate-700 uppercase">OR</span>
+                        <div className="h-[1px] bg-slate-800 flex-1"></div>
+                      </div>
+
+                      <button onClick={() => setShowWebcam(true)} className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+                        <Camera className="w-4 h-4" />
+                        <span className="text-[10px] uppercase tracking-widest">Use Camera</span>
+                      </button>
+                    </div>
                   )}
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                 </div>
               </div>
+            )}
+
+            {showWebcam && (
+              <WebcamCapture
+                onCapture={handleWebcamCapture}
+                onClose={() => setShowWebcam(false)}
+              />
             )}
 
             <button
@@ -420,12 +481,7 @@ const ImageGenPage: React.FC<ImageGenPageProps> = () => {
                         <Edit3 className="w-4 h-4" /> Edit Image
                       </button>
                       <button
-                        onClick={() => {
-                          const l = document.createElement('a');
-                          l.href = res.url;
-                          l.download = `gen-image-${Date.now()}.png`;
-                          l.click();
-                        }}
+                        onClick={() => forceDownload(res.url, `gen-image-${Date.now()}.png`)}
                         className="w-14 h-14 bg-white text-slate-950 rounded-2xl flex items-center justify-center hover:bg-slate-200 transition-all"
                       >
                         <Download className="w-5 h-5" />

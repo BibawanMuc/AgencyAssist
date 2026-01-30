@@ -15,10 +15,13 @@ import {
   Maximize2,
   Settings2,
   Sparkles,
-  Square
+  Square,
+  Camera
 } from 'lucide-react';
+import WebcamCapture from './WebcamCapture';
 import { VideoModel } from '../types';
 import { uploadFile, generateAssetPath } from '../src/services/supabase-storage';
+import { saveGeneratedVideo } from '../src/services/supabase-db';
 
 interface VideoGenPageProps {
 }
@@ -43,7 +46,36 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
   const [statusMessage, setStatusMessage] = useState('Preparing engine...');
   const [error, setError] = useState<string | null>(null);
   const [startingImage, setStartingImage] = useState<{ data: string, mimeType: string } | null>(null);
+  const [showWebcam, setShowWebcam] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const forceDownload = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("Download failed", e);
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleWebcamCapture = (base64Image: string) => {
+    // base64Image comes as data:image/png;base64,...
+    const parts = base64Image.split(',');
+    const mime = parts[0].split(':')[1].split(';')[0];
+    const data = parts[1];
+
+    setStartingImage({ data, mimeType: mime });
+    setShowWebcam(false);
+  };
 
   useEffect(() => {
     return () => {
@@ -110,6 +142,14 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
         const publicUrl = await uploadFile(blob, path);
 
         setVideoUrl(publicUrl);
+
+        // Save to DB
+        await saveGeneratedVideo({
+          prompt: prompt,
+          model: model,
+          videoUrl: publicUrl,
+          config: { aspectRatio, resolution, isI2V: !!startingImage }
+        });
 
         // Clean up local blob URL
         URL.revokeObjectURL(blobUrl);
@@ -225,16 +265,22 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
                   </div>
                 </div>
               ) : (
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-12 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center gap-3 text-slate-500 hover:border-indigo-500 hover:text-indigo-400 transition-all bg-slate-800/30 group"
-                >
-                  <Upload className="w-8 h-8 group-hover:-translate-y-1 transition-transform" />
-                  <div className="text-center">
-                    <span className="text-xs font-bold uppercase tracking-widest block">Upload Image</span>
-                    <span className="text-[10px] opacity-60">To enable I2V workflow</span>
-                  </div>
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex-1 py-8 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center gap-2 text-slate-500 hover:border-indigo-500 hover:text-indigo-400 transition-all bg-slate-800/30 group"
+                  >
+                    <Upload className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Upload</span>
+                  </button>
+                  <button
+                    onClick={() => setShowWebcam(true)}
+                    className="flex-1 py-8 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center gap-2 text-slate-500 hover:border-indigo-500 hover:text-indigo-400 transition-all bg-slate-800/30 group"
+                  >
+                    <Camera className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Camera</span>
+                  </button>
+                </div>
               )}
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
             </div>
@@ -329,13 +375,12 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
                   <p className="text-xs text-slate-500">Your high-fidelity {model === VideoModel.PRO ? 'Pro' : 'Fast'} video is synthesized.</p>
                 </div>
               </div>
-              <a
-                href={videoUrl}
-                download={`px-ai-video-${Date.now()}.mp4`}
+              <button
+                onClick={() => forceDownload(videoUrl, `px-ai-video-${Date.now()}.mp4`)}
                 className="w-full md:w-auto px-8 py-4 bg-white text-slate-950 rounded-2xl font-bold hover:bg-slate-200 transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-2"
               >
                 Download Master File
-              </a>
+              </button>
             </div>
           )}
 
@@ -355,6 +400,12 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
           </div>
         </div>
       </div>
+      {showWebcam && (
+        <WebcamCapture
+          onCapture={handleWebcamCapture}
+          onClose={() => setShowWebcam(false)}
+        />
+      )}
     </div>
   );
 };

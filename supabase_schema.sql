@@ -126,7 +126,88 @@ TO public
 USING (bucket_id = 'generated_assets');
 
 -- 4. Allow users to delete their own assets
-CREATE POLICY "Users can delete their own assets"
-ON storage.objects FOR DELETE
-TO authenticated
-USING (auth.uid() = owner);
+-- 5. Allow public delete (optional, depends on use case)
+-- CREATE POLICY "Public Delete Access" ...
+
+-- ==========================================
+-- Generated Assets Persistence (New 30.01.2026)
+-- ==========================================
+
+-- 1. Generated Images (ImageGen)
+CREATE TABLE public.generated_images (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    prompt TEXT,
+    style TEXT,
+    image_url TEXT NOT NULL,
+    config JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.generated_images ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own generated images"
+    ON public.generated_images FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own generated images"
+    ON public.generated_images FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own generated images"
+    ON public.generated_images FOR DELETE
+    USING (auth.uid() = user_id);
+
+
+-- 2. Generated Thumbnails (ThumbGen)
+CREATE TABLE public.generated_thumbnails (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    prompt TEXT,
+    platform TEXT,
+    image_url TEXT NOT NULL,
+    config JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.generated_thumbnails ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own generated thumbnails"
+    ON public.generated_thumbnails FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own generated thumbnails"
+    ON public.generated_thumbnails FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own generated thumbnails"
+    ON public.generated_thumbnails FOR DELETE
+    USING (auth.uid() = user_id);
+
+
+-- 3. Generated Videos (VideoGen)
+CREATE TABLE public.generated_videos (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    prompt TEXT,
+    model TEXT,
+    video_url TEXT NOT NULL,
+    thumbnail_url TEXT,
+    config JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.generated_videos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own generated videos"
+    ON public.generated_videos FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own generated videos"
+    ON public.generated_videos FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own generated videos"
+    ON public.generated_videos FOR DELETE
+    USING (auth.uid() = user_id);
+

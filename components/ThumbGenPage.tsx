@@ -14,10 +14,13 @@ import {
   Palette,
   UserCircle,
   Layers,
-  Edit3
+  Edit3,
+  Camera
 } from 'lucide-react';
+import WebcamCapture from './WebcamCapture';
 import { ImageModel } from '../types';
 import { uploadBase64Image, generateAssetPath } from '../src/services/supabase-storage';
+import { saveGeneratedThumbnail } from '../src/services/supabase-db';
 
 interface ThumbGenPageProps {
 }
@@ -55,7 +58,37 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
   const [subjectStyle, setSubjectStyle] = useState(PRESETS.subjectStyles[0]);
   const [backgroundStyle, setBackgroundStyle] = useState(PRESETS.backgrounds[0]);
 
+  const [showWebcam, setShowWebcam] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const forceDownload = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("Download failed", e);
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleWebcamCapture = (base64Image: string) => {
+    // base64Image comes as data:image/png;base64,...
+    const parts = base64Image.split(',');
+    const mime = parts[0].split(':')[1].split(';')[0];
+    const data = parts[1];
+
+    setSourceImage({ data, mimeType: mime });
+    setShowWebcam(false);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,6 +133,14 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
         const path = generateAssetPath('thumbnails', 'png');
         const publicUrl = await uploadBase64Image(imageUrl, path);
         setResult(publicUrl);
+
+        // Save to DB
+        await saveGeneratedThumbnail({
+          prompt: fullPrompt,
+          platform: selectedPlatform.id,
+          imageUrl: publicUrl,
+          config: { model, style: overallStyle, placement: textPlacement }
+        });
       }
     } catch (err: any) {
       if (err.message?.includes('404')) {
@@ -114,10 +155,7 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
 
   const downloadImage = () => {
     if (!result) return;
-    const link = document.createElement('a');
-    link.href = result;
-    link.download = `thumb-${Date.now()}.png`;
-    link.click();
+    forceDownload(result, `thumb-${Date.now()}.png`);
   };
 
   // Helper component for dual input (Select + Custom)
@@ -192,10 +230,18 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
                   <button onClick={() => setSourceImage(null)} className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><X className="w-4 h-4" /></button>
                 </div>
               ) : (
-                <button onClick={() => fileInputRef.current?.click()} className="w-full py-10 border-2 border-dashed border-slate-700 rounded-[2rem] flex flex-col items-center justify-center gap-3 text-slate-500 hover:border-indigo-500 hover:text-indigo-400 transition-all bg-slate-800/20 group">
-                  <Upload className="w-8 h-8 group-hover:-translate-y-1 transition-transform" />
-                  <span className="text-xs font-black uppercase tracking-widest">Inject Visual Reference</span>
-                </button>
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-3">
+                    <button onClick={() => fileInputRef.current?.click()} className="flex-1 py-10 border-2 border-dashed border-slate-700 rounded-[2rem] flex flex-col items-center justify-center gap-3 text-slate-500 hover:border-indigo-500 hover:text-indigo-400 transition-all bg-slate-800/20 group">
+                      <Upload className="w-8 h-8 group-hover:-translate-y-1 transition-transform" />
+                      <span className="text-xs font-black uppercase tracking-widest">Upload</span>
+                    </button>
+                    <button onClick={() => setShowWebcam(true)} className="flex-1 py-10 border-2 border-dashed border-slate-700 rounded-[2rem] flex flex-col items-center justify-center gap-3 text-slate-500 hover:border-indigo-500 hover:text-indigo-400 transition-all bg-slate-800/20 group">
+                      <Camera className="w-8 h-8 group-hover:-translate-y-1 transition-transform" />
+                      <span className="text-xs font-black uppercase tracking-widest">Camera</span>
+                    </button>
+                  </div>
+                </div>
               )}
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
             </div>
@@ -222,6 +268,12 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
           </div>
         </div>
       </div>
+      {showWebcam && (
+        <WebcamCapture
+          onCapture={handleWebcamCapture}
+          onClose={() => setShowWebcam(false)}
+        />
+      )}
     </div>
   );
 };

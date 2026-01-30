@@ -33,8 +33,10 @@ import {
   Database,
   Check,
   History,
-  Pen
+  Pen,
+  Camera
 } from 'lucide-react';
+import WebcamCapture from './WebcamCapture';
 import { StoryboardShot, StoryboardAsset, ImageModel, StoryboardConfig, StoryboardSession, VideoModel } from '../types';
 import { Language, translations } from '../translations';
 
@@ -78,6 +80,32 @@ const StoryGenPage: React.FC<StoryGenPageProps> = ({ language }) => {
   const cancelledShotsRef = useRef<Set<string>>(new Set());
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const activeStyle = STORY_STYLES.find(s => s.id === config.style) || STORY_STYLES[0];
+
+  // Webcam State
+  const [showWebcam, setShowWebcam] = useState<{ active: boolean, assetId: string | null }>({ active: false, assetId: null });
+
+  const handleWebcamCapture = async (base64Image: string) => {
+    if (!showWebcam.assetId) return;
+
+    // Create a Blob from base64
+    const res = await fetch(base64Image);
+    const blob = await res.blob();
+    const file = new File([blob], `webcam-${Date.now()}.png`, { type: 'image/png' });
+
+    // Upload immediately
+    const processUpload = async () => {
+      try {
+        const path = generateAssetPath('uploads', 'png');
+        const publicUrl = await uploadFile(file, path);
+        setAssets(prev => prev.map(a => a.id === showWebcam.assetId ? { ...a, imageUrl: publicUrl } : a));
+      } catch (err) {
+        console.error("Upload failed", err);
+        setError("Failed to upload webcam capture.");
+      }
+    };
+    processUpload();
+    setShowWebcam({ active: false, assetId: null });
+  };
 
   // Load from Supabase on Mount
   useEffect(() => {
@@ -450,6 +478,7 @@ const StoryGenPage: React.FC<StoryGenPageProps> = ({ language }) => {
                   {asset.imageUrl ? <img src={asset.imageUrl} className="w-full h-full object-cover" alt={asset.name} /> : <div className="text-slate-800 flex flex-col items-center gap-4">{asset.isGenerating ? <Loader2 className="w-12 h-12 animate-spin text-indigo-500" /> : <ImageIcon className="w-16 h-16 opacity-5" />}</div>}
                   <div className="absolute inset-x-6 bottom-6 flex gap-2 translate-y-4 opacity-0 group-hover/img:translate-y-0 group-hover/img:opacity-100 transition-all duration-300">
                     <button onClick={() => fileInputRefs.current[asset.id]?.click()} className="flex-1 py-3 bg-white/10 backdrop-blur-xl text-white rounded-2xl text-[10px] font-black uppercase border border-white/10">Upload</button>
+                    <button onClick={() => setShowWebcam({ active: true, assetId: asset.id })} className="flex-1 py-3 bg-white/10 backdrop-blur-xl text-white rounded-2xl text-[10px] font-black uppercase border border-white/10"><Camera className="w-4 h-4 mx-auto" /></button>
                     <button onClick={() => generateAssetImage(asset.id)} disabled={asset.isGenerating} className="flex-1 py-3 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-tighter shadow-xl">{asset.isGenerating ? 'Drawing...' : 'AI Draw'}</button>
                   </div>
                 </div>
@@ -501,8 +530,17 @@ const StoryGenPage: React.FC<StoryGenPageProps> = ({ language }) => {
           </section>
         )}
       </div>
+      {showWebcam.active && (
+        <WebcamCapture
+          onCapture={handleWebcamCapture}
+          onClose={() => setShowWebcam({ active: false, assetId: null })}
+        />
+      )}
+
     </div>
   );
 };
 
 export default StoryGenPage;
+
+

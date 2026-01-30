@@ -1,6 +1,37 @@
 import { supabase } from '../config/supabase';
 import { ChatSession, StoryboardSession, BotType } from '../../types';
 
+export interface GeneratedImage {
+    id?: string;
+    userId?: string;
+    prompt: string;
+    style?: string;
+    imageUrl: string;
+    config?: any;
+    createdAt?: number;
+}
+
+export interface GeneratedThumbnail {
+    id?: string;
+    userId?: string;
+    prompt: string;
+    platform?: string;
+    imageUrl: string;
+    config?: any;
+    createdAt?: number;
+}
+
+export interface GeneratedVideo {
+    id?: string;
+    userId?: string;
+    prompt: string;
+    model?: string;
+    videoUrl: string;
+    thumbnailUrl?: string;
+    config?: any;
+    createdAt?: number;
+}
+
 // ==================== CHAT SESSIONS ====================
 
 /**
@@ -283,4 +314,116 @@ export async function updateUserProfile(userId: string, updates: { full_name?: s
         .eq('id', userId);
 
     if (error) throw error;
+}
+
+// ==================== GENERATED ASSETS PERSISTENCE ====================
+
+// --- Generated Images ---
+export async function saveGeneratedImage(image: GeneratedImage): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { error } = await supabase.from('generated_images').insert({
+        user_id: user.id,
+        prompt: image.prompt,
+        style: image.style,
+        image_url: image.imageUrl,
+        config: image.config
+    });
+    if (error) throw error;
+}
+
+export async function getGeneratedImages(): Promise<GeneratedImage[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabase
+        .from('generated_images')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []).map(item => ({
+        id: item.id,
+        userId: item.user_id,
+        prompt: item.prompt,
+        style: item.style,
+        imageUrl: item.image_url,
+        config: item.config,
+        createdAt: new Date(item.created_at).getTime()
+    }));
+}
+
+// --- Generated Thumbnails ---
+export async function saveGeneratedThumbnail(thumb: GeneratedThumbnail): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { error } = await supabase.from('generated_thumbnails').insert({
+        user_id: user.id,
+        prompt: thumb.prompt,
+        platform: thumb.platform,
+        image_url: thumb.imageUrl,
+        config: thumb.config
+    });
+    if (error) throw error;
+}
+
+export async function getGeneratedThumbnails(): Promise<GeneratedThumbnail[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabase
+        .from('generated_thumbnails')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []).map(item => ({
+        id: item.id,
+        userId: item.user_id,
+        prompt: item.prompt,
+        platform: item.platform,
+        imageUrl: item.image_url,
+        config: item.config,
+        createdAt: new Date(item.created_at).getTime()
+    }));
+}
+
+// --- Generated Videos ---
+export async function saveGeneratedVideo(video: GeneratedVideo): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { error } = await supabase.from('generated_videos').insert({
+        user_id: user.id,
+        prompt: video.prompt,
+        model: video.model,
+        video_url: video.videoUrl,
+        thumbnail_url: video.thumbnailUrl,
+        config: video.config
+    });
+    if (error) throw error;
+}
+
+export async function getGeneratedVideos(): Promise<GeneratedVideo[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabase
+        .from('generated_videos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []).map(item => ({
+        id: item.id,
+        userId: item.user_id,
+        prompt: item.prompt,
+        model: item.model,
+        videoUrl: item.video_url,
+        thumbnailUrl: item.thumbnail_url,
+        config: item.config,
+        createdAt: new Date(item.created_at).getTime()
+    }));
 }
