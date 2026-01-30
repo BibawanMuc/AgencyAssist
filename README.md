@@ -12,7 +12,9 @@ Professional AI Content Creation Suite powered by Google Gemini & Veo.
 - **Image Generation**: Flux/Gemini powered image generation with inpainting.
 - **Video Generation**: Text-to-Video and Image-to-Video using Veo 3.1.
 - **Storyboarding**: Complete cinematic workflow tools.
-- **Secure Cloud**: Full persistence via Supabase.
+- **Webcam Integration**: Direct capture for Image, Video, and Storyboard assets.
+- **History & Persistence**: Full history tracking via Supabase for all generated content.
+- **Secure Cloud**: User authentication and RLS-protected storage.
 
 ## Tech Stack
 

@@ -13,11 +13,11 @@
 
 ---
 
-## ⚡ AKTUELLER STATUS: SUPABASE MIGRATION ABGESCHLOSSEN
+## ⚡ AKTUELLER STATUS: FEATURE COMPLETE & POLISHING
 
-**Stand: 30.01.2026 - Maintenance & Fixes**
+**Stand: 30.01.2026 - Maintenance & Polishing**
 
-Das Projekt wurde erfolgreich von einer lokalen IndexedDB/localStorage-Lösung über einen kurzen Firebase-Versuch hin zu **Supabase** migriert und stabilisiert.
+Das Projekt verfügt nun über eine vollständige Supabase-Integration, persistente History-Funktionen für alle Generatoren und Webcam-Support.
 
 ### ✅ Implementiert:
 1. **Supabase Integration**
@@ -36,10 +36,11 @@ Das Projekt wurde erfolgreich von einer lokalen IndexedDB/localStorage-Lösung �
    - Storage Service (`src/services/supabase-storage.ts`) für Assets
    - Gemini Service (`src/services/gemini.ts`) für direkte API-Calls (Serverless/Client-Side)
 
-4. **Frontend Migration**
-   - Alle Pages (`ChatPage`, `StoryGenPage`, `ImageGenPage`, etc.) nutzen nun Supabase
-   - Einheitliches API-Key Handling (Environmental Key für alle Modelle)
-   - Entfernung aller Firebase-Altlasten
+4. **Frontend Migration & New Features**
+   - **History UI**: Alle Generatoren (Thumb/Image/Video/Story) haben nun eine persistente History-Sidebar.
+   - **ThumbGen 2.0**: Aspect-Ratio-Support & "No-Magic"-Prompting für mehr Kontrolle.
+   - **Webcam Support**: Direkte Bildaufnahme in ImageGen, VideoGen und StoryGen.
+   - **Download Fixes**: Zuverlässiger Blob-Download für alle Assets.
 
 ### 🗑️ Entfernt (Cleanup):
 - Firebase Cloud Functions
