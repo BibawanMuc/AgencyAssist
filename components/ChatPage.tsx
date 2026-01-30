@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatSession, ChatMessage, BotType } from '../types';
-import { createChat, generateChatTitle, getAI } from '../services/gemini';
+import { createChat, generateChatTitle, getAI, BOT_INSTRUCTIONS } from '../services/gemini';
 import {
   Send,
   Plus,
@@ -42,7 +42,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
       color: 'text-blue-400',
       bgColor: 'bg-blue-500/10',
       model: 'gemini-3-flash-preview',
-      system: t.bots.normal.system
+      system: BOT_INSTRUCTIONS[BotType.NORMAL]
     },
     [BotType.CODING]: {
       name: t.bots.coding.name,
@@ -51,7 +51,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
       color: 'text-emerald-400',
       bgColor: 'bg-emerald-500/10',
       model: 'gemini-3-pro-preview',
-      system: t.bots.coding.system
+      system: BOT_INSTRUCTIONS[BotType.CODING]
     },
     [BotType.CONTENT]: {
       name: t.bots.content.name,
@@ -60,7 +60,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
       color: 'text-amber-400',
       bgColor: 'bg-amber-500/10',
       model: 'gemini-3-pro-preview',
-      system: t.bots.content.system
+      system: BOT_INSTRUCTIONS[BotType.CONTENT]
     },
     [BotType.ANALYSIS]: {
       name: t.bots.analysis.name,
@@ -69,7 +69,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
       color: 'text-violet-400',
       bgColor: 'bg-violet-500/10',
       model: 'gemini-3-pro-preview',
-      system: t.bots.analysis.system
+      system: BOT_INSTRUCTIONS[BotType.ANALYSIS]
     }
   };
 

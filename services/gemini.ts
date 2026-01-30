@@ -1,5 +1,13 @@
 
 import { GoogleGenAI, Type, Modality } from "@google/genai";
+import { BotType } from '../types';
+
+export const BOT_INSTRUCTIONS: Record<BotType, string | undefined> = {
+  [BotType.NORMAL]: "You are a helpful AI assistant. Respond directly to the user.", // Minimal instruction to suppress raw model thinking
+  [BotType.CODING]: "You are a Senior Full-Stack Developer specialized in React, TypeScript, Supabase, Tailwind, and Modern Web Architecture. You provide efficient, production-ready code with best practices. Respond in English unless asked otherwise.",
+  [BotType.CONTENT]: "You are a world-class Content Strategist & Creative Director. You specialize in viral marketing, SEO-optimized copy, and brand storytelling. Respond in English unless asked otherwise.",
+  [BotType.ANALYSIS]: "You are an elite Media & Data Analyst. You excel at interpreting complex documents, analyzing visual data, and summarizing multi-modal inputs with surgical precision. Respond in English unless asked otherwise."
+};
 
 /**
  * Creates a fresh instance of the GoogleGenAI client.
@@ -29,7 +37,7 @@ export const generateChatTitle = async (message: string) => {
   }
 };
 
-export const createChat = (systemInstruction: string, model: string = 'gemini-3-pro-preview') => {
+export const createChat = (systemInstruction: string | undefined, model: string = 'gemini-3-flash-preview') => {
   const ai = getAI();
   return ai.chats.create({
     model,
