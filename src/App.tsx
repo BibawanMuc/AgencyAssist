@@ -12,6 +12,7 @@ import ThumbGenPage from '../components/ThumbGenPage';
 import StoryGenPage from '../components/StoryGenPage';
 import ImageGenPage from '../components/ImageGenPage';
 import VideoGenPage from '../components/VideoGenPage';
+import ProfilePage from '../components/ProfilePage';
 import { Language } from '../translations';
 
 // Main App Component (Protected)
@@ -21,6 +22,8 @@ const MainApp: React.FC = () => {
     const saved = localStorage.getItem('app_lang');
     return (saved as Language) || 'de';
   });
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('app_lang', language);
@@ -42,6 +45,8 @@ const MainApp: React.FC = () => {
         return <ImageGenPage {...commonProps} />;
       case Page.VIDEO_GEN:
         return <VideoGenPage {...commonProps} />;
+      case Page.PROFILE:
+        return <ProfilePage {...commonProps} />;
       default:
         return <DashboardPage setCurrentPage={setCurrentPage} language={language} />;
     }
@@ -54,9 +59,12 @@ const MainApp: React.FC = () => {
         setCurrentPage={setCurrentPage}
         language={language}
         setLanguage={setLanguage}
+        collapsed={isSidebarCollapsed}
+        setCollapsed={setIsSidebarCollapsed}
       />
       <main className="flex-1 relative overflow-y-auto custom-scrollbar">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className={`mx-auto px-4 sm:px-6 lg:px-8 py-8 ${(currentPage === Page.CHAT || currentPage === Page.THUMB_GEN || currentPage === Page.STORY_GEN || currentPage === Page.IMAGE_GEN || currentPage === Page.VIDEO_GEN || currentPage === Page.DASHBOARD) ? 'max-w-[1800px]' : 'max-w-7xl'
+          }`}>
           {renderPage()}
         </div>
       </main>

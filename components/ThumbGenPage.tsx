@@ -163,8 +163,8 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
 
       {error && <div className="bg-red-500/10 border border-red-500/50 p-4 rounded-2xl flex items-center justify-between gap-4 text-red-400 text-sm font-bold"><X className="w-5 h-5 cursor-pointer" onClick={() => setError(null)} /> {error}</div>}
 
-      <div className="grid lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-10 rounded-[3rem] shadow-2xl space-y-8">
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl space-y-8 h-fit">
           <div className="space-y-4">
             <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2"><Sparkles className="w-4 h-4 text-indigo-400" /> Main Topic & Hooks</label>
             <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="A hyper-realistic review of the new Cyber-Truck..." className="w-full bg-slate-800 border-slate-700 rounded-[2rem] px-8 py-6 text-slate-100 focus:ring-4 focus:ring-indigo-500/20 h-32 resize-none transition-all text-xl font-medium outline-none shadow-inner" />
@@ -212,8 +212,8 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <div className="flex-1 bg-slate-900 border-2 border-dashed border-slate-800 rounded-[3rem] flex items-center justify-center overflow-hidden min-h-[500px] relative group">
+        <div className="lg:col-span-2 flex flex-col gap-6 h-[calc(100vh-200px)] sticky top-8">
+          <div className="flex-1 bg-slate-900 border-2 border-dashed border-slate-800 rounded-[3rem] flex items-center justify-center overflow-hidden relative group">
             {result ? (
               <div className="relative w-full h-full"><img src={result} alt="Generated Artwork" className="w-full h-full object-contain" /><div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-4"><button onClick={downloadImage} className="px-8 py-4 bg-white text-slate-950 rounded-2xl font-black uppercase text-xs tracking-widest hover:scale-110 transition-transform"><Download className="w-4 h-4 inline mr-2" /> Download PNG</button></div></div>
             ) : (

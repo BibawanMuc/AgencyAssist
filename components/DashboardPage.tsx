@@ -13,8 +13,9 @@ import {
   Zap,
   Star,
   ShieldCheck,
-  Cpu
+  Cpu,
 } from 'lucide-react';
+import { useAuth } from '../src/contexts/AuthContext';
 import { Language, translations } from '../translations';
 
 interface DashboardPageProps {
@@ -26,7 +27,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ setCurrentPage, language 
   const s = translations[language].sidebar;
   const d = translations[language].dashboard;
 
+  const { user } = useAuth();
+  const userName = user?.displayName?.split(' ')[0] || 'Creator'; // First name or default
+
   const tools = [
+    // ... existing tools array ...
     {
       id: Page.CHAT,
       title: s.chat,
@@ -77,11 +82,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ setCurrentPage, language 
   return (
     <div className="space-y-16 py-10 animate-in fade-in duration-700">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-900 border border-slate-800 rounded-[4rem] p-12 lg:p-20 shadow-2xl">
+      <section className="relative overflow-hidden bg-slate-900 border border-slate-800 rounded-[4rem] p-12 lg:p-20 shadow-2xl flex md:flex-row flex-col items-center justify-between gap-12">
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-indigo-600/10 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[400px] h-[400px] bg-purple-600/5 blur-[100px] rounded-full" />
 
-        <div className="relative z-10 max-w-3xl space-y-8">
+        <div className="relative z-10 max-w-3xl space-y-8 flex-1">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full text-indigo-400 text-[10px] font-black uppercase tracking-widest">
             <Sparkles className="w-3.5 h-3.5" />
             {d.heroBadge}
@@ -90,7 +95,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ setCurrentPage, language 
             Unified <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">PX-AIssistent</span> Protocol.
           </h1>
           <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-2xl">
-            {d.heroDesc}
+            Willkommen <span className="text-indigo-400 font-bold">{userName}</span> bei PX-AIssistent. Deine umfassende Suite chirurgisch präziser KI-Tools, die Konzepte sofort in produktionsreife Assets verwandeln.
           </p>
           <div className="flex flex-wrap gap-6 pt-4">
             <div className="flex items-center gap-3 bg-slate-800/50 px-6 py-3 rounded-2xl border border-slate-700/50">
@@ -101,6 +106,22 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ setCurrentPage, language 
               <Cpu className="w-5 h-5 text-indigo-400" />
               <span className="text-xs font-bold text-slate-300">{d.enginePowered}</span>
             </div>
+          </div>
+        </div>
+
+        {/* User Avatar Box */}
+        <div className="relative z-10 w-full md:w-[400px] aspect-square bg-slate-950 rounded-[3rem] border border-slate-800 shadow-2xl overflow-hidden group shrink-0">
+          {user?.photoURL ? (
+            <img src={user.photoURL} alt={userName} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-slate-900">
+              <span className="text-9xl font-black text-slate-800 select-none">{userName.charAt(0)}</span>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
+          <div className="absolute bottom-10 left-10">
+            <p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-2">Active Session</p>
+            <h3 className="text-3xl font-black text-white tracking-tighter">{user?.displayName || 'Creator'}</h3>
           </div>
         </div>
       </section>

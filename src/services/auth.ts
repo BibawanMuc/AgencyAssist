@@ -5,6 +5,21 @@ export interface User {
   uid: string;
   email: string | null;
   displayName?: string;
+  photoURL?: string;
+}
+
+
+
+/**
+ * Helper to map Supabase user to our internal User interface
+ */
+function mapSupabaseUser(supabaseUser: SupabaseUser): User {
+  return {
+    uid: supabaseUser.id,
+    email: supabaseUser.email || null,
+    displayName: supabaseUser.user_metadata?.full_name || undefined,
+    photoURL: supabaseUser.user_metadata?.avatar_url || undefined
+  };
 }
 
 /**
@@ -87,15 +102,32 @@ export function onAuthStateChanged(callback: (user: User | null) => void): () =>
 }
 
 /**
- * Helper to map Supabase user to our internal User interface
+ * Update user password
  */
-function mapSupabaseUser(supabaseUser: SupabaseUser): User {
-  return {
-    uid: supabaseUser.id,
-    email: supabaseUser.email || null,
-    displayName: supabaseUser.user_metadata?.full_name || undefined
-  };
+export async function updateUserPassword(password: string): Promise<void> {
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    throw new Error(getAuthErrorMessage(error.message));
+  }
 }
+
+/**
+ * Update user metadata (display name, avatar)
+ */
+export async function updateUserMetadata(updates: { displayName?: string; photoURL?: string }): Promise<void> {
+  const data: any = {};
+  if (updates.displayName) data.full_name = updates.displayName;
+  if (updates.photoURL) data.avatar_url = updates.photoURL;
+
+  const { error } = await supabase.auth.updateUser({
+    data
+  });
+
+  if (error) {
+    throw new Error(getAuthErrorMessage(error.message));
+  }
+}
+
 
 /**
  * Convert Supabase/General Auth error codes to user-friendly messages

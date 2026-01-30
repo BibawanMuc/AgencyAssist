@@ -5,7 +5,8 @@ export enum Page {
   THUMB_GEN = 'thumb-gen',
   STORY_GEN = 'story-gen',
   IMAGE_GEN = 'image-gen',
-  VIDEO_GEN = 'video-gen'
+  VIDEO_GEN = 'video-gen',
+  PROFILE = 'profile'
 }
 
 export enum BotType {

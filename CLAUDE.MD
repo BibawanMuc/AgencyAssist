@@ -15,9 +15,9 @@
 
 ## ⚡ AKTUELLER STATUS: SUPABASE MIGRATION ABGESCHLOSSEN
 
-**Stand: 26.01.2026 - Migration vollständig**
+**Stand: 30.01.2026 - Maintenance & Fixes**
 
-Das Projekt wurde erfolgreich von einer lokalen IndexedDB/localStorage-Lösung über einen kurzen Firebase-Versuch hin zu **Supabase** migriert.
+Das Projekt wurde erfolgreich von einer lokalen IndexedDB/localStorage-Lösung über einen kurzen Firebase-Versuch hin zu **Supabase** migriert und stabilisiert.
 
 ### ✅ Implementiert:
 1. **Supabase Integration**
@@ -26,7 +26,8 @@ Das Projekt wurde erfolgreich von einer lokalen IndexedDB/localStorage-Lösung �
 
 2. **Authentication System**
    - Auth Service (`src/services/auth.ts`) via Supabase Auth
-   - Auth Context (`src/contexts/AuthContext.tsx`)
+   - Auth Context (`src/contexts/AuthContext.tsx`) with `useAuth` hook
+   - Type-safe User mapping
    - Login & Signup UI (`src/components/auth/`)
    - Protected Route Logic
 

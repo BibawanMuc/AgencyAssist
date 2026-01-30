@@ -100,7 +100,23 @@ export const translations = {
       fast: 'Fast',
       pro: 'Pro',
       error: 'Error',
-      selectKey: 'Select Key'
+      selectKey: 'Select Key',
+      save: 'Save',
+      cancel: 'Cancel',
+      password: 'Password',
+      confirmPassword: 'Confirm Password'
+    },
+    profile: {
+      title: 'Profile Settings',
+      publicProfile: 'Public Profile',
+      security: 'Security',
+      displayName: 'Display Name',
+      avatar: 'Avatar',
+      changeAvatar: 'Change Avatar',
+      newPassword: 'New Password',
+      updatePassword: 'Update Password',
+      success: 'Profile updated successfully',
+      passwordSuccess: 'Password updated successfully'
     }
   },
   de: {
@@ -201,7 +217,23 @@ export const translations = {
       fast: 'Schnell',
       pro: 'Pro',
       error: 'Fehler',
-      selectKey: 'Key wählen'
+      selectKey: 'Key wählen',
+      save: 'Speichern',
+      cancel: 'Abbrechen',
+      password: 'Passwort',
+      confirmPassword: 'Passwort bestätigen'
+    },
+    profile: {
+      title: 'Profil-Einstellungen',
+      publicProfile: 'Öffentliches Profil',
+      security: 'Sicherheit',
+      displayName: 'Anzeigename',
+      avatar: 'Avatar',
+      changeAvatar: 'Avatar ändern',
+      newPassword: 'Neues Passwort',
+      updatePassword: 'Passwort aktualisieren',
+      success: 'Profil erfolgreich aktualisiert',
+      passwordSuccess: 'Passwort erfolgreich aktualisiert'
     }
   },
   fr: {
@@ -302,7 +334,23 @@ export const translations = {
       fast: 'Rapide',
       pro: 'Pro',
       error: 'Erreur',
-      selectKey: 'Clé'
+      selectKey: 'Clé',
+      save: 'Enregistrer',
+      cancel: 'Annuler',
+      password: 'Mot de passe',
+      confirmPassword: 'Confirmer le mot de passe'
+    },
+    profile: {
+      title: 'Paramètres du profil',
+      publicProfile: 'Profil public',
+      security: 'Sécurité',
+      displayName: 'Nom d\'affichage',
+      avatar: 'Avatar',
+      changeAvatar: 'Changer d\'avatar',
+      newPassword: 'Nouveau mot de passe',
+      updatePassword: 'Mettre à jour le mot de passe',
+      success: 'Profil mis à jour avec succès',
+      passwordSuccess: 'Mot de passe mis à jour avec succès'
     }
   },
   es: {
@@ -403,7 +451,23 @@ export const translations = {
       fast: 'Rápido',
       pro: 'Pro',
       error: 'Error',
-      selectKey: 'Clave'
+      selectKey: 'Clave',
+      save: 'Guardar',
+      cancel: 'Cancelar',
+      password: 'Contraseña',
+      confirmPassword: 'Confirmar contraseña'
+    },
+    profile: {
+      title: 'Configuración del perfil',
+      publicProfile: 'Perfil público',
+      security: 'Seguridad',
+      displayName: 'Nombre para mostrar',
+      avatar: 'Avatar',
+      changeAvatar: 'Cambiar avatar',
+      newPassword: 'Nueva contraseña',
+      updatePassword: 'Actualizar contraseña',
+      success: 'Perfil actualizado con éxito',
+      passwordSuccess: 'Contraseña actualizada con éxito'
     }
   }
 };

@@ -46,6 +46,9 @@ Professional AI Content Creation Suite powered by Google Gemini & Veo.
    npm run dev
    ```
 
+5. **Deployment**
+   See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed VPS deployment instructions.
+
 ## Architecture
 
 This application uses a serverless architecture where the React frontend communicates directly with Supabase for data persistence and authentication, and with Google's AI APIs for content generation.

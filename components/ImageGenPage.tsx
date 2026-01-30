@@ -367,7 +367,7 @@ const ImageGenPage: React.FC<ImageGenPageProps> = () => {
         </div>
 
         {/* Right Preview/Editor Panel */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-8 h-[calc(100vh-200px)] sticky top-8 flex flex-col">
           {editImage ? (
             <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
               <div className="bg-slate-900 border border-slate-800 p-4 rounded-[3rem] flex items-center justify-between px-10">

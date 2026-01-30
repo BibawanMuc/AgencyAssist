@@ -264,3 +264,23 @@ export async function getUserPreferences(): Promise<UserPreferences | null> {
 
     return null;
 }
+// ==================== USER PROFILES ====================
+
+/**
+ * Update user profile in profiles table
+ */
+/**
+ * Update user profile in profiles table
+ */
+export async function updateUserProfile(userId: string, updates: { full_name?: string; avatar_url?: string }): Promise<void> {
+    const updatePayload: any = {};
+    if (updates.full_name) updatePayload.full_name = updates.full_name;
+    if (updates.avatar_url) updatePayload.avatar_url = updates.avatar_url;
+
+    const { error } = await supabase
+        .from('profiles')
+        .update(updatePayload)
+        .eq('id', userId);
+
+    if (error) throw error;
+}

@@ -169,8 +169,8 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
         </div>
       )}
 
-      <div className="grid lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-4 space-y-6">
           <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-xl space-y-8">
             {/* Mode Indicator */}
             <div className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50">
@@ -275,7 +275,7 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-3 flex flex-col gap-6">
+        <div className="lg:col-span-8 flex flex-col gap-6 h-[calc(100vh-200px)] sticky top-8">
           <div className="aspect-video bg-slate-900 border-2 border-dashed border-slate-800 rounded-[2.5rem] overflow-hidden flex items-center justify-center relative shadow-inner">
             {isGenerating ? (
               <div className="text-center p-8 flex flex-col items-center gap-6">

@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Page } from '../types';
+import { Language, translations } from '../translations';
+import { useAuth } from '../src/hooks/useAuth';
 import {
   MessageSquare,
   Image as ImageIcon,
@@ -12,19 +14,21 @@ import {
   Trash2,
   Home,
   User,
-  LogOut
+  LogOut,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
-import { Language, translations } from '../translations';
-import { useAuth } from '../src/hooks/useAuth';
 
 interface SidebarProps {
   currentPage: Page;
   setCurrentPage: (page: Page) => void;
   language: Language;
   setLanguage: (lang: Language) => void;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, language, setLanguage }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, language, setLanguage, collapsed, setCollapsed }) => {
   const { user, signOut } = useAuth();
   const t = translations[language].sidebar;
 
@@ -57,18 +61,29 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, language
   };
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex shrink-0">
-      <div className="p-6 flex-1 flex flex-col">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-600/20">
+    <aside className={`${collapsed ? 'w-20' : 'w-64'} bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex shrink-0 transition-all duration-300 relative group/sidebar`}>
+
+      {/* Toggle Button */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="absolute -right-3 top-8 bg-slate-800 border border-slate-700 rounded-full p-1 text-slate-400 hover:text-white shadow-lg opacity-0 group-hover/sidebar:opacity-100 transition-opacity z-50"
+      >
+        {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+      </button>
+
+      <div className="p-4 flex-1 flex flex-col items-center">
+        <div className={`flex items-center gap-2 mb-8 ${collapsed ? 'justify-center' : ''} w-full transition-all`}>
+          <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-600/20 shrink-0">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-            PX-AIssistent
-          </h1>
+          {!collapsed && (
+            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent whitespace-nowrap overflow-hidden animate-in fade-in slide-in-from-left-2 duration-200">
+              PX-AIssistent
+            </h1>
+          )}
         </div>
 
-        <div className="mb-8 p-1 bg-slate-800/50 rounded-xl flex border border-slate-800">
+        <div className={`mb-8 p-1 bg-slate-800/50 rounded-xl flex border border-slate-800 w-full ${collapsed ? 'flex-col gap-1' : ''}`}>
           {languages.map((lang) => (
             <button
               key={lang.id}
@@ -81,54 +96,67 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, language
           ))}
         </div>
 
-        <nav className="space-y-2 overflow-y-auto flex-1 custom-scrollbar">
+        <nav className="space-y-2 overflow-y-auto flex-1 custom-scrollbar w-full">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setCurrentPage(item.id)}
-              className={`w-full flex flex-col items-start p-3 rounded-xl transition-all ${currentPage === item.id
+              className={`w-full flex items-center p-3 rounded-xl transition-all ${currentPage === item.id
                 ? 'bg-indigo-600/10 border-indigo-500 text-indigo-400 shadow-[inset_0_0_10px_rgba(79,70,229,0.1)]'
                 : 'hover:bg-slate-800 border-transparent text-slate-400'
-                } border`}
+                } border ${collapsed ? 'justify-center' : ''}`}
+              title={collapsed ? item.label : ''}
             >
-              <div className="flex items-center gap-3">
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium text-sm">{item.label}</span>
-              </div>
-              <span className="text-[10px] opacity-60 ml-8 text-left line-clamp-1">{item.description}</span>
+              <item.icon className={`w-5 h-5 shrink-0 ${collapsed ? 'mx-auto' : ''}`} />
+              {!collapsed && (
+                <div className="flex flex-col items-start ml-3 overflow-hidden">
+                  <span className="font-medium text-sm whitespace-nowrap">{item.label}</span>
+                  <span className="text-[10px] opacity-60 text-left line-clamp-1 whitespace-nowrap">{item.description}</span>
+                </div>
+              )}
             </button>
           ))}
         </nav>
       </div>
 
-      <div className="p-6 border-t border-slate-800 space-y-4">
+      <div className={`p-4 border-t border-slate-800 space-y-4 w-full`}>
         {/* User Profile Section */}
         {user && (
-          <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
-                <User className="w-4 h-4 text-indigo-400" />
+          <div className={`bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col gap-2 ${collapsed ? 'items-center' : ''}`}>
+            <button
+              onClick={() => setCurrentPage(Page.PROFILE)}
+              className={`flex items-center gap-3 w-full text-left hover:bg-slate-700/30 p-1 rounded-lg transition-colors group ${collapsed ? 'justify-center' : ''}`}
+            >
+              <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30 group-hover:border-indigo-500/60 transition-colors overflow-hidden shrink-0">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-4 h-4 text-indigo-400" />
+                )}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-200 truncate">
-                  {user.displayName || 'User'}
-                </p>
-                <p className="text-[10px] text-slate-500 truncate">
-                  {user.email}
-                </p>
-              </div>
-            </div>
+              {!collapsed && (
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <p className="text-xs font-medium text-slate-200 truncate group-hover:text-white">
+                    {user.displayName || 'User'}
+                  </p>
+                  <p className="text-[10px] text-slate-500 truncate group-hover:text-slate-400">
+                    {user.email}
+                  </p>
+                </div>
+              )}
+            </button>
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center justify-center gap-2 py-1.5 px-3 bg-slate-700/50 hover:bg-red-500/10 hover:text-red-400 text-slate-400 text-xs rounded-lg transition-all border border-transparent hover:border-red-500/20"
+              className={`w-full flex items-center justify-center gap-2 py-1.5 px-2 bg-slate-700/50 hover:bg-red-500/10 hover:text-red-400 text-slate-400 text-xs rounded-lg transition-all border border-transparent hover:border-red-500/20`}
+              title="Sign Out"
             >
-              <LogOut className="w-3 h-3" />
-              <span>Sign Out</span>
+              <LogOut className="w-3 h-3 shrink-0" />
+              {!collapsed && <span>Sign Out</span>}
             </button>
           </div>
         )}
 
-        <div className="bg-slate-800/50 p-4 rounded-xl space-y-3">
+        <div className={`bg-slate-800/50 p-3 rounded-xl space-y-3 ${collapsed ? 'hidden' : 'block'}`}>
           <div className="flex items-center justify-between">
             <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest flex items-center gap-2">
               <Database className="w-3 h-3 text-indigo-500" /> Storage
