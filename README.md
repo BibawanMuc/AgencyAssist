@@ -20,17 +20,19 @@ Professional AI Content Creation Suite powered by Google Gemini & Veo.
 
 - **Frontend**: React, TypeScript, Tailwind CSS, Vite
 - **Backend**: Supabase (Auth, Database, Storage)
-- **AI**: Google Gemini API, Google Veo API
+- **AI**: Google Gemini API (Gemini 2.0/3.0 Pro), Google Veo 3.1
 
 ## Getting Started
 
 1. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Configure Environment**
    Create a `.env.local` file with the following credentials:
+
    ```env
    # Google AI
    API_KEY=your_gemini_api_key
@@ -44,6 +46,7 @@ Professional AI Content Creation Suite powered by Google Gemini & Veo.
    Run the SQL commands found in `supabase_schema.sql` in your Supabase SQL Editor to set up the required tables and security policies.
 
 4. **Run Locally**
+
    ```bash
    npm run dev
    ```

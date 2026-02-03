@@ -37,6 +37,7 @@ import {
   Camera
 } from 'lucide-react';
 import WebcamCapture from './WebcamCapture';
+import { useAuth } from '../src/contexts/AuthContext';
 import { StoryboardShot, StoryboardAsset, ImageModel, StoryboardConfig, StoryboardSession, VideoModel } from '../types';
 import { Language, translations } from '../translations';
 
@@ -107,6 +108,8 @@ const StoryGenPage: React.FC<StoryGenPageProps> = ({ language }) => {
     setShowWebcam({ active: false, assetId: null });
   };
 
+  const { signOut } = useAuth();
+
   // Load from Supabase on Mount
   useEffect(() => {
     const init = async () => {
@@ -119,8 +122,12 @@ const StoryGenPage: React.FC<StoryGenPageProps> = ({ language }) => {
           startNewProject();
         }
         setIsDbReady(true);
-      } catch (e) {
+      } catch (e: any) {
         console.error("DB Load Error", e);
+        if (e.message?.includes('Not authenticated') || e.message?.includes('403')) {
+            signOut();
+            return;
+        }
         startNewProject();
       }
     };
@@ -147,8 +154,11 @@ const StoryGenPage: React.FC<StoryGenPageProps> = ({ language }) => {
       try {
         await saveStoryboardSession(updatedSession);
         setSessions(prev => prev.map(s => s.id === activeSessionId ? updatedSession : s));
-      } catch (e) {
+      } catch (e: any) {
         console.error("Critical: Failed to save to Supabase.", e);
+        if (e.message?.includes('Not authenticated') || e.message?.includes('403')) {
+            signOut();
+        }
         setError("Database error: Could not save assets.");
       }
     }, 1000);

@@ -370,8 +370,11 @@ export async function saveGeneratedThumbnail(thumb: GeneratedThumbnail): Promise
 }
 
 export async function getGeneratedThumbnails(): Promise<GeneratedThumbnail[]> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+        console.error("Auth error in getGeneratedThumbnails:", authError);
+        throw new Error('Not authenticated: ' + (authError?.message || 'No user found'));
+    }
 
     const { data, error } = await supabase
         .from('generated_thumbnails')

@@ -22,6 +22,7 @@ import {
   Video
 } from 'lucide-react';
 import WebcamCapture from './WebcamCapture';
+import { useAuth } from '../src/contexts/AuthContext';
 import { VideoModel } from '../types';
 import { uploadFile, generateAssetPath } from '../src/services/supabase-storage';
 import { saveGeneratedVideo, getGeneratedVideos, GeneratedVideo } from '../src/services/supabase-db';
@@ -56,6 +57,8 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
   const [history, setHistory] = useState<GeneratedVideo[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  const { signOut } = useAuth();
+
   useEffect(() => {
     loadHistory();
   }, []);
@@ -64,8 +67,11 @@ const VideoGenPage: React.FC<VideoGenPageProps> = () => {
     try {
       const data = await getGeneratedVideos();
       setHistory(data);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Failed to load history", e);
+      if (e.message?.includes('Not authenticated') || e.message?.includes('403')) {
+          signOut();
+      }
     }
   };
 

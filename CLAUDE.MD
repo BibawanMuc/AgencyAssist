@@ -5,6 +5,7 @@
 **PX-AIssistent** ist eine professionelle All-in-One Content Creation Suite, die Google Gemini 3 und Veo 3.1 APIs nutzt, um multimodale KI-Workflows für Agenturen bereitzustellen.
 
 ### Kernfunktionalität
+
 - **ChatBots**: 4 spezialisierte AI-Assistenten (General, DevX, Content Strategist, Media Analyst)
 - **ThumbGen**: Intelligenter Thumbnail-Generator mit Plattform-Presets
 - **StoryGen**: Vollständiger Storyboard-to-Video Workflow mit Asset-Management
@@ -13,13 +14,19 @@
 
 ---
 
-## ⚡ AKTUELLER STATUS: FEATURE COMPLETE & POLISHING
+- **Status:** Maintenance & Polishing
+- **Recent Fixes (Feb 2026):**
+  - Standardized all Image Generation to use `gemini-3-pro-image-preview` (via `ImageModel` alias) to resolve 404/Empty errors with Flash/Imagen models.
+  - Implemented auto-logout for `403 Forbidden` / `Not authenticated` errors across all generator pages (`ThumbGen`, `ImageGen`, `VideoGen`, `StoryGen`).
+  - Fixed `StoryGen` 404 errors by migrating from `FLASH` to `PRO` model system-wide.
+- **Current Focus:** Ensuring stability of generative features and deployment readiness.
 
-**Stand: 30.01.2026 - Maintenance & Polishing**
+**Stand: 03.02.2026 - Maintenance & Polishing**
 
 Das Projekt verfügt nun über eine vollständige Supabase-Integration, persistente History-Funktionen für alle Generatoren und Webcam-Support.
 
 ### ✅ Implementiert:
+
 1. **Supabase Integration**
    - Client Config (`src/config/supabase.ts`)
    - Type Definitions (`supabase_schema.sql`)
@@ -43,6 +50,7 @@ Das Projekt verfügt nun über eine vollständige Supabase-Integration, persiste
    - **Download Fixes**: Zuverlässiger Blob-Download für alle Assets.
 
 ### 🗑️ Entfernt (Cleanup):
+
 - Firebase Cloud Functions
 - Firebase Config & Rules
 - `isApiKeySelected` Logik (da ein Key für alle Modelle genutzt wird)
@@ -53,6 +61,7 @@ Das Projekt verfügt nun über eine vollständige Supabase-Integration, persiste
 ## Technologie-Stack
 
 ### Frontend
+
 - **React 19.x** mit TypeScript 5.x
 - **Vite** (Build Tool)
 - **Tailwind CSS** (Styling)
@@ -60,11 +69,13 @@ Das Projekt verfügt nun über eine vollständige Supabase-Integration, persiste
 - **React Router DOM** (Routing)
 
 ### Backend & Infrastructure
+
 - **Supabase Auth** (Authentication)
 - **Supabase Database** (PostgreSQL-based persistence)
 - **Supabase Storage** (Asset Hosting)
 
 ### KI & APIs
+
 - **Google GenAI SDK** (Client-side usage)
 - **Gemini 2.5 Flash / 3.0 Pro** (via API Key)
 - **Veo 3.1** (via API Key)
@@ -118,12 +129,15 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsIn...
 ## Features & Workflows
 
 ### 1. Unified API Key
+
 Die Anwendung nutzt einen einzigen API Key (`process.env.API_KEY`) für alle KI-Modelle. Die Unterscheidung zwischen Flash/Pro-Keys im UI wurde entfernt, um die UX zu vereinfachen.
 
 ### 2. Direct AI Access
+
 Da es keine Middle-Layer-Functions mehr gibt, ruft der Client (`gemini.ts`) die Google AI APIs direkt auf. Dies reduziert Latenz und Komplexität, erfordert aber einen gültigen API Key im Client-Environment oder Proxy (für Production empfohlen).
 
 ### 3. Data Persistence
+
 - **Chats**: Werden in der `chat_sessions` Tabelle gespeichert.
 - **Storyboards**: Werden in der `storyboard_sessions` Tabelle gespeichert.
 - **Assets**: Bilder und Videos landen im Supabase Storage Bucket `assets`.
@@ -133,6 +147,7 @@ Da es keine Middle-Layer-Functions mehr gibt, ruft der Client (`gemini.ts`) die 
 ## Development
 
 ### Setup
+
 1. Repository klonen.
 2. `npm install`
 3. `.env.local` erstellen und Keys eintragen.
@@ -140,11 +155,13 @@ Da es keine Middle-Layer-Functions mehr gibt, ruft der Client (`gemini.ts`) die 
 5. In Supabase Storage einen Bucket namens `assets` erstellen (Public access policy setzen).
 
 ### Start
+
 ```bash
 npm run dev
 ```
 
 ### Build
+
 ```bash
 npm run build
 ```

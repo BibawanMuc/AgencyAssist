@@ -82,7 +82,7 @@ export interface StoryboardSession {
 }
 
 export enum ImageModel {
-  FLASH = 'gemini-2.5-flash-image',
+  FLASH = 'gemini-3-pro-image-preview', // Aliased to PRO as FLASH models are currently unstable/404
   PRO = 'gemini-3-pro-image-preview'
 }
 

@@ -49,7 +49,7 @@ export const createChat = (systemInstruction: string | undefined, model: string 
 
 export const generateImage = async (
   prompt: string,
-  model: string = 'gemini-2.5-flash-image',
+  model: string = 'gemini-2.0-flash-exp',
   aspectRatio: string = "1:1",
   imageRefs?: { data: string, mimeType: string }[]
 ) => {
@@ -89,10 +89,19 @@ export const generateImage = async (
       }
     });
 
+    // Check for inlineData in parts
     for (const part of response.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData) {
         return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
       }
+    }
+    
+    // Check for inlineData directly on candidate (some versions do this)
+    // @ts-ignore
+    if (response.candidates?.[0]?.inlineData) {
+       // @ts-ignore
+       const inlineData = response.candidates[0].inlineData;
+       return `data:${inlineData.mimeType};base64,${inlineData.data}`;
     }
   } catch (err: any) {
     if (err.message?.includes('404')) {

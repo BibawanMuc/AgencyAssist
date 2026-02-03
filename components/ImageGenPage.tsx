@@ -22,6 +22,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import WebcamCapture from './WebcamCapture';
+import { useAuth } from '../src/contexts/AuthContext';
 import { ImageModel } from '../types';
 import { uploadBase64Image, generateAssetPath } from '../src/services/supabase-storage';
 import { saveGeneratedImage, getGeneratedImages, GeneratedImage } from '../src/services/supabase-db';
@@ -72,6 +73,8 @@ const ImageGenPage: React.FC<ImageGenPageProps> = () => {
   const [showWebcam, setShowWebcam] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { signOut } = useAuth();
+
   useEffect(() => {
     loadHistory();
   }, []);
@@ -80,8 +83,11 @@ const ImageGenPage: React.FC<ImageGenPageProps> = () => {
     try {
       const data = await getGeneratedImages();
       setHistory(data);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Failed to load history", e);
+      if (e.message?.includes('Not authenticated') || e.message?.includes('403')) {
+          signOut();
+      }
     }
   };
 

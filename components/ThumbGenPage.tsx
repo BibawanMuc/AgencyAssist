@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateImage } from '../services/gemini';
+import { useAuth } from '../src/contexts/AuthContext';
 import {
   Download,
   LayoutTemplate,
@@ -45,7 +46,7 @@ const PRESETS = {
 const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
   const [prompt, setPrompt] = useState('');
   const [selectedRatio, setSelectedRatio] = useState(ASPECT_RATIOS[0]);
-  const [model, setModel] = useState<ImageModel>(ImageModel.FLASH);
+  const [model, setModel] = useState<ImageModel>(ImageModel.PRO);
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [sourceImage, setSourceImage] = useState<{ data: string, mimeType: string } | null>(null);
@@ -67,6 +68,8 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { signOut } = useAuth(); // Get signOut from AuthContext
+
   useEffect(() => {
     loadHistory();
   }, []);
@@ -75,8 +78,13 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
     try {
       const data = await getGeneratedThumbnails();
       setHistory(data);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Failed to load history", e);
+      if (e.message?.includes('Not authenticated') || e.message?.includes('403')) {
+          // Session is invalid, force logout
+          signOut();
+      }
+      setError("Failed to load history. Please try refreshing or logging in again.");
     }
   };
 
@@ -141,30 +149,40 @@ const ThumbGenPage: React.FC<ThumbGenPageProps> = () => {
         High contrast, razor-sharp focus, cinematic lighting.
       `.trim();
 
+      // console.log("ThumbGen: Starting generation with prompt:", fullPrompt);
       const imageUrl = await generateImage(fullPrompt, model, selectedRatio.ratio, sourceImage ? [sourceImage] : undefined);
+      // console.log("ThumbGen: Received imageUrl:", imageUrl);
 
       if (imageUrl) {
         // Upload to Supabase Storage
         const path = generateAssetPath('thumbnails', 'png');
+        // console.log("ThumbGen: Uploading to path:", path);
         const publicUrl = await uploadBase64Image(imageUrl, path);
+        // console.log("ThumbGen: Uploaded publicUrl:", publicUrl);
         setResult(publicUrl);
 
         // Save to DB
+        // console.log("ThumbGen: Saving to DB...");
         await saveGeneratedThumbnail({
           prompt: fullPrompt,
           platform: 'custom', // Or derive from ratio but custom is fine now since we removed platform strictness
           imageUrl: publicUrl,
           config: { model, style: overallStyle, placement: textPlacement, ratio: selectedRatio.ratio }
         });
+        // console.log("ThumbGen: Saved to DB");
 
         // Refresh history
         await loadHistory();
+      } else {
+        console.error("ThumbGen: generateImage returned null/empty");
+        setError("Failed to generate image (empty result).");
       }
     } catch (err: any) {
+      console.error("ThumbGen Error:", err);
       if (err.message?.includes('404')) {
         setError("Model not found.");
       } else {
-        setError("An unexpected error occurred during generation.");
+        setError("An unexpected error occurred: " + err.message);
       }
     } finally {
       setIsGenerating(false);
