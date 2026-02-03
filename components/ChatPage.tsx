@@ -20,10 +20,12 @@ import {
   Paperclip,
   FileText,
   FileSearch,
-  Image as ImageIcon
+  Image as ImageIcon,
+  LogOut
 } from 'lucide-react';
 import { Language, translations } from '../translations';
 import { saveChatSession, getChatSessions, deleteChatSession } from '../src/services/supabase-db';
+import { supabase } from '../src/config/supabase';
 import MarkdownRenderer from './MarkdownRenderer';
 
 interface ChatPageProps {
@@ -146,6 +148,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -255,6 +262,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
         console.error("Chat error:", err);
         if (err.message?.includes("Requested entity was not found")) {
           setError("Model version not available for current API Key. Retrying with basic model...");
+        } else if (err.message?.includes("403") || err.message?.includes("API key was reported as leaked")) {
+          setError("⚠️ CRITICAL: Your Gemini API Key is blocked/leaked. Please generate a new key and update your .env file.");
         } else {
           setError(tc.error);
         }
@@ -273,14 +282,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
             <button
               key={type}
               onClick={() => startNewChat(type)}
-              className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-800/50 hover:bg-indigo-600 transition-all group text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-800 hover:bg-indigo-600 transition-all group text-left shadow-lg border border-transparent hover:border-indigo-400"
             >
               <div className={`p-2 rounded-xl bg-slate-900 group-hover:bg-white/10 transition-colors`}>
                 <config.icon className={`w-5 h-5 ${config.color} group-hover:text-white`} />
               </div>
               <div className="overflow-hidden">
-                <p className="text-sm font-bold text-white group-hover:text-white">{config.name}</p>
-                <p className="text-[10px] text-slate-500 group-hover:text-white/60 truncate">{config.description}</p>
+                <p className="text-sm font-bold text-slate-200 group-hover:text-white">{config.name}</p>
+                <p className="text-[10px] text-slate-500 group-hover:text-indigo-100 truncate">{config.description}</p>
               </div>
             </button>
           ))}
@@ -297,8 +306,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
                   key={session.id}
                   onClick={() => setActiveSessionId(session.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group ${activeSessionId === session.id
-                    ? 'bg-slate-800 text-indigo-400'
-                    : 'text-slate-400 hover:bg-slate-800/50'
+                    ? 'bg-slate-800 text-indigo-400 border border-indigo-500/30'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
                     }`}
                 >
                   <BotIcon className={`w-4 h-4 flex-shrink-0 ${activeSessionId === session.id ? 'text-indigo-400' : 'text-slate-600'}`} />
@@ -314,6 +323,16 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
             )}
           </div>
         </div>
+        
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:bg-slate-800 hover:border-red-500/30 transition-all text-left group"
+        >
+          <div className="p-2 rounded-xl bg-slate-800 group-hover:bg-red-500/10 transition-colors">
+            <LogOut className="w-5 h-5" />
+          </div>
+          <span className="text-sm font-bold">Sign Out</span>
+        </button>
       </div>
 
       <div className="flex-1 bg-slate-900 border border-slate-800 rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl relative">
