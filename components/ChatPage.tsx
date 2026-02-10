@@ -98,6 +98,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Detect mobile and collapse sidebar on mount
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      setIsSidebarCollapsed(true);
+    }
+  }, []);
+
   // Load sessions from Supabase on mount
   useEffect(() => {
     loadSessions();
@@ -294,17 +302,29 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
 
   return (
     <div className="h-[calc(100vh-120px)] flex gap-6 relative">
+      {/* Mobile Backdrop */}
+      {!isSidebarCollapsed && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30 backdrop-blur-sm"
+          onClick={() => setIsSidebarCollapsed(true)}
+        />
+      )}
+
       {/* Toggle Button */}
       <button
         onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        className="absolute left-0 top-4 z-50 bg-slate-800 hover:bg-slate-700 p-2 rounded-r-xl border border-l-0 border-slate-700 transition-all shadow-lg"
-        style={{ left: isSidebarCollapsed ? '0' : '320px' }}
+        className="fixed md:absolute left-4 md:left-0 top-4 z-50 bg-slate-800 hover:bg-slate-700 p-2 rounded-r-xl border border-l-0 border-slate-700 transition-all shadow-lg"
+        style={{ left: isSidebarCollapsed ? '0' : undefined }}
       >
         <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isSidebarCollapsed ? '-rotate-90' : 'rotate-90'}`} />
       </button>
 
-      {/* Sidebar */}
-      <div className={`flex flex-col gap-4 transition-all duration-300 overflow-hidden ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-80 opacity-100'}`}>
+      {/* Sidebar - Desktop: relative, Mobile: fixed overlay */}
+      <div className={`
+        flex flex-col gap-4 transition-all duration-300 overflow-hidden
+        fixed md:relative inset-y-0 left-0 z-40 bg-slate-950 md:bg-transparent
+        ${isSidebarCollapsed ? '-translate-x-full md:translate-x-0 md:w-0 md:opacity-0' : 'translate-x-0 w-80 opacity-100'}
+      `}>
         {/* Bot Selection Dropdown */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl relative">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-1 mb-2">{t.newGen}</p>
