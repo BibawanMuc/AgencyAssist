@@ -13,7 +13,8 @@ export enum BotType {
   NORMAL = 'normal',
   CODING = 'coding',
   CONTENT = 'content',
-  ANALYSIS = 'analysis'
+  ANALYSIS = 'analysis',
+  ONBOARDING = 'onboarding'
 }
 
 export interface ChatMessage {

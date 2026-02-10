@@ -2,11 +2,58 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { BotType } from '../types';
 
+// Cache for onboarding knowledge
+let onboardingKnowledgeCache: string | null = null;
+
+/**
+ * Loads the onboarding knowledge from the markdown file.
+ * Returns cached version if already loaded.
+ */
+export const loadOnboardingKnowledge = async (): Promise<string> => {
+  if (onboardingKnowledgeCache) {
+    return onboardingKnowledgeCache;
+  }
+
+  try {
+    const response = await fetch('/knowledge/onboarding.md');
+    if (!response.ok) {
+      throw new Error(`Failed to load onboarding knowledge: ${response.status}`);
+    }
+    onboardingKnowledgeCache = await response.text();
+    return onboardingKnowledgeCache;
+  } catch (error) {
+    console.error('Error loading onboarding knowledge:', error);
+    return 'Onboarding knowledge file not found. Please ensure the onboarding.md file is placed in the /knowledge directory.';
+  }
+};
+
 export const BOT_INSTRUCTIONS: Record<BotType, string | undefined> = {
   [BotType.NORMAL]: "You are a helpful AI assistant. Respond directly to the user.", // Minimal instruction to suppress raw model thinking
   [BotType.CODING]: "You are a Senior Full-Stack Developer specialized in React, TypeScript, Supabase, Tailwind, and Modern Web Architecture. You provide efficient, production-ready code with best practices. Respond in English unless asked otherwise.",
   [BotType.CONTENT]: "You are a world-class Content Strategist & Creative Director. You specialize in viral marketing, SEO-optimized copy, and brand storytelling. Respond in English unless asked otherwise.",
-  [BotType.ANALYSIS]: "You are an elite Media & Data Analyst. You excel at interpreting complex documents, analyzing visual data, and summarizing multi-modal inputs with surgical precision. Respond in English unless asked otherwise."
+  [BotType.ANALYSIS]: "You are an elite Media & Data Analyst. You excel at interpreting complex documents, analyzing visual data, and summarizing multi-modal inputs with surgical precision. Respond in English unless asked otherwise.",
+  [BotType.ONBOARDING]: undefined // Will be set dynamically with knowledge context
+};
+
+/**
+ * Gets the bot instruction for the onboarding bot with loaded knowledge.
+ */
+export const getOnboardingInstruction = async (): Promise<string> => {
+  const knowledge = await loadOnboardingKnowledge();
+  return `You are an expert HR and Onboarding Assistant for Pixelschickeria GmbH & Co. KG. You help employees with onboarding questions, company policies, HR processes, and general information about the company.
+
+You have access to the following company knowledge base:
+
+---
+${knowledge}
+---
+
+When answering questions:
+- Always base your answers on the knowledge base provided above
+- Be friendly, professional, and helpful
+- If a question is not covered in the knowledge base, politely say you don't have that information
+- Respond in the same language the user asks in (German or English)
+- Keep answers concise but complete`;
 };
 
 /**
@@ -95,13 +142,13 @@ export const generateImage = async (
         return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
       }
     }
-    
+
     // Check for inlineData directly on candidate (some versions do this)
     // @ts-ignore
     if (response.candidates?.[0]?.inlineData) {
-       // @ts-ignore
-       const inlineData = response.candidates[0].inlineData;
-       return `data:${inlineData.mimeType};base64,${inlineData.data}`;
+      // @ts-ignore
+      const inlineData = response.candidates[0].inlineData;
+      return `data:${inlineData.mimeType};base64,${inlineData.data}`;
     }
   } catch (err: any) {
     if (err.message?.includes('404')) {

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatSession, ChatMessage, BotType } from '../types';
-import { createChat, generateChatTitle, getAI, BOT_INSTRUCTIONS } from '../services/gemini';
+import { createChat, generateChatTitle, getAI, BOT_INSTRUCTIONS, getOnboardingInstruction } from '../services/gemini';
 import {
   Send,
   Plus,
@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Bot,
   User,
+  Users,
   Key,
   X,
   Code2,
@@ -72,6 +73,15 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
       bgColor: 'bg-violet-500/10',
       model: 'gemini-3-pro-preview',
       system: BOT_INSTRUCTIONS[BotType.ANALYSIS]
+    },
+    [BotType.ONBOARDING]: {
+      name: t.bots.onboarding.name,
+      description: t.bots.onboarding.desc,
+      icon: Users,
+      color: 'text-pink-400',
+      bgColor: 'bg-pink-500/10',
+      model: 'gemini-3-pro-preview',
+      system: undefined // Will be loaded dynamically
     }
   };
 
@@ -208,9 +218,15 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
         const ai = getAI();
         let responseText = "";
 
-        // Branch: If we have an attachment or if it's the analysis bot, use generateContent for multi-modality
+        // Load dynamic system instruction for onboarding bot
+        let systemInstruction = botConfig.system;
+        if (updatedSessions[sessionIndex].botId === BotType.ONBOARDING) {
+          systemInstruction = await getOnboardingInstruction();
+        }
+
+        // Branch: If we have an attachment or if it's the analysis/onboarding bot, use generateContent for context
         // Otherwise, use the standard chat object for speed/simplicity
-        if (currentAttachment || updatedSessions[sessionIndex].botId === BotType.ANALYSIS) {
+        if (currentAttachment || updatedSessions[sessionIndex].botId === BotType.ANALYSIS || updatedSessions[sessionIndex].botId === BotType.ONBOARDING) {
           const history = updatedSessions[sessionIndex].messages.slice(0, -1).map(m => ({
             role: m.role === 'user' ? 'user' : 'model',
             parts: [{ text: m.text }]
@@ -231,13 +247,13 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
             model: botConfig.model,
             contents: [...history, { role: 'user', parts: userParts }],
             config: {
-              systemInstruction: botConfig.system
+              systemInstruction: systemInstruction
             }
           });
           responseText = response.text || "I'm sorry, I couldn't process that.";
         } else {
           // Standard chat path
-          const chat = createChat(botConfig.system, botConfig.model);
+          const chat = createChat(systemInstruction, botConfig.model);
           const response = await chat.sendMessage({ message: userMessage });
           responseText = response.text || "I'm sorry, I couldn't process that.";
         }
@@ -323,7 +339,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
             )}
           </div>
         </div>
-        
+
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:bg-slate-800 hover:border-red-500/30 transition-all text-left group"

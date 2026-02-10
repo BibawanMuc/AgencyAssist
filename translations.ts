@@ -87,6 +87,11 @@ export const translations = {
           name: 'Media Analyst',
           desc: 'Analyze docs, images & PDFs.',
           system: 'You are a world-class Media & Document Analyst. You can describe images, summarize PDFs, explain complex texts, and extract insights from multi-modal data. Respond in English.'
+        },
+        onboarding: {
+          name: 'Onboarding Assistant',
+          desc: 'HR & Onboarding expert.',
+          system: 'You are an HR and Onboarding expert. Respond in English.'
         }
       }
     },
@@ -204,6 +209,11 @@ export const translations = {
           name: 'Medien-Analyst',
           desc: 'Analysiere Docs, Bilder & PDFs.',
           system: 'Du bist ein Weltklasse-Medien- und Dokumentenanalyst. Du kannst Bilder beschreiben, PDFs zusammenfassen, komplexe Texte erklären und Erkenntnisse aus multimodalen Daten gewinnen. Antworte auf Deutsch.'
+        },
+        onboarding: {
+          name: 'Onboarding Assistent',
+          desc: 'HR & Onboarding Experte.',
+          system: 'Du bist ein HR- und Onboarding-Experte. Antworte auf Deutsch.'
         }
       }
     },
@@ -321,6 +331,11 @@ export const translations = {
           name: 'Analyste Médias',
           desc: 'Analysez docs, images & PDFs.',
           system: 'Vous êtes un analyste de documents et de médias de classe mondiale. Vous pouvez décrire des images, résumer des PDF, expliquer des textes complexes et extraire des informations de données multimodales. Répondez en français.'
+        },
+        onboarding: {
+          name: 'Assistant Onboarding',
+          desc: 'Expert RH & Onboarding.',
+          system: 'Vous êtes un expert en RH et onboarding. Répondez en français.'
         }
       }
     },
@@ -438,6 +453,11 @@ export const translations = {
           name: 'Analista de Medios',
           desc: 'Analiza docs, imágenes y PDFs.',
           system: 'Eres un analista de medios y documentos de clase mundial. Puedes describir imágenes, resumir archivos PDF, explicar textos complejos y extraer información de datos multimodales. Responde en español.'
+        },
+        onboarding: {
+          name: 'Asistente de Onboarding',
+          desc: 'Experto en RR.HH. y Onboarding.',
+          system: 'Eres un experto en RR.HH. y onboarding. Responde en español.'
         }
       }
     },

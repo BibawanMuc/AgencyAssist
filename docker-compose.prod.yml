@@ -20,3 +20,6 @@ services:
       - proxy-netz
     env_file:
       - .env
+    volumes:
+      # Mount knowledge directory for easy updates without rebuild
+      - ./knowledge:/usr/share/nginx/html/knowledge:ro
