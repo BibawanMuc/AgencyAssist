@@ -382,19 +382,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
                 <MessageSquare className="w-8 h-8 mx-auto mb-2" />
                 <p className="text-[10px] font-bold">{t.noSessions}</p>
               </div>
-            )}
-          </div>
+            )}\n          </div>
         </div>
-
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:bg-slate-800 hover:border-red-500/30 transition-all text-left group"
-        >
-          <div className="p-2 rounded-xl bg-slate-800 group-hover:bg-red-500/10 transition-colors">
-            <LogOut className="w-5 h-5" />
-          </div>
-          <span className="text-sm font-bold">Sign Out</span>
-        </button>
       </div>
 
       <div className="flex-1 bg-slate-900 border border-slate-800 rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl relative">
