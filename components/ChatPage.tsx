@@ -22,7 +22,8 @@ import {
   FileText,
   FileSearch,
   Image as ImageIcon,
-  LogOut
+  LogOut,
+  ChevronDown
 } from 'lucide-react';
 import { Language, translations } from '../translations';
 import { saveChatSession, getChatSessions, deleteChatSession } from '../src/services/supabase-db';
@@ -92,6 +93,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [attachment, setAttachment] = useState<{ data: string; mimeType: string; name: string } | null>(null);
+  const [isBotDropdownOpen, setIsBotDropdownOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -292,23 +294,56 @@ const ChatPage: React.FC<ChatPageProps> = ({ language }) => {
   return (
     <div className="h-[calc(100vh-120px)] flex gap-6">
       <div className="w-80 flex flex-col gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 space-y-3 shadow-2xl">
+        {/* Bot Selection Dropdown */}
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl relative">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-1 mb-2">{t.newGen}</p>
-          {(Object.entries(BOTS_CONFIG) as [BotType, typeof BOTS_CONFIG[BotType]][]).map(([type, config]) => (
-            <button
-              key={type}
-              onClick={() => startNewChat(type)}
-              className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-800 hover:bg-indigo-600 transition-all group text-left shadow-lg border border-transparent hover:border-indigo-400"
-            >
-              <div className={`p-2 rounded-xl bg-slate-900 group-hover:bg-white/10 transition-colors`}>
-                <config.icon className={`w-5 h-5 ${config.color} group-hover:text-white`} />
+
+          {/* Dropdown Button */}
+          <button
+            onClick={() => setIsBotDropdownOpen(!isBotDropdownOpen)}
+            className="w-full flex items-center justify-between gap-3 p-3 rounded-2xl bg-slate-800 hover:bg-slate-700 transition-all text-left shadow-lg border border-slate-700"
+          >
+            <div className="flex items-center gap-3 flex-1 overflow-hidden">
+              <div className={`p-2 rounded-xl bg-slate-900 transition-colors`}>
+                {React.createElement(BOTS_CONFIG[selectedBotType].icon, { className: `w-5 h-5 ${BOTS_CONFIG[selectedBotType].color}` })}
               </div>
               <div className="overflow-hidden">
-                <p className="text-sm font-bold text-slate-200 group-hover:text-white">{config.name}</p>
-                <p className="text-[10px] text-slate-500 group-hover:text-indigo-100 truncate">{config.description}</p>
+                <p className="text-sm font-bold text-slate-200">{BOTS_CONFIG[selectedBotType].name}</p>
+                <p className="text-[10px] text-slate-500 truncate">{BOTS_CONFIG[selectedBotType].description}</p>
               </div>
-            </button>
-          ))}
+            </div>
+            <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isBotDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isBotDropdownOpen && (
+            <div className="absolute left-4 right-4 top-[calc(100%-4px)] bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
+              <div className="p-2 space-y-1 max-h-[400px] overflow-y-auto">
+                {(Object.entries(BOTS_CONFIG) as [BotType, typeof BOTS_CONFIG[BotType]][]).map(([type, config]) => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      startNewChat(type);
+                      setSelectedBotType(type);
+                      setIsBotDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all group text-left ${selectedBotType === type
+                      ? 'bg-indigo-600 border border-indigo-400'
+                      : 'bg-slate-800 hover:bg-slate-700 border border-transparent'
+                      }`}
+                  >
+                    <div className={`p-2 rounded-xl ${selectedBotType === type ? 'bg-white/10' : 'bg-slate-900 group-hover:bg-slate-800'} transition-colors`}>
+                      <config.icon className={`w-5 h-5 ${selectedBotType === type ? 'text-white' : config.color + ' group-hover:text-white'}`} />
+                    </div>
+                    <div className="overflow-hidden">
+                      <p className={`text-sm font-bold ${selectedBotType === type ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>{config.name}</p>
+                      <p className={`text-[10px] truncate ${selectedBotType === type ? 'text-indigo-100' : 'text-slate-500 group-hover:text-slate-300'}`}>{config.description}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 bg-slate-900/50 rounded-3xl border border-slate-800 p-4 overflow-y-auto shadow-inner">
