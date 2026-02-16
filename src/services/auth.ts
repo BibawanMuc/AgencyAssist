@@ -132,8 +132,14 @@ export async function updateUserMetadata(updates: { displayName?: string; photoU
  * Send password reset email to the user
  */
 export async function resetPassword(email: string): Promise<void> {
+  // Use production URL for redirect, fallback to current origin for local dev
+  const appUrl = (import.meta as any).env.VITE_APP_URL;
+  const redirectUrl = appUrl
+    ? `${appUrl}/reset-password`
+    : `${window.location.origin}/reset-password`;
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`,
+    redirectTo: redirectUrl,
   });
 
   if (error) {
