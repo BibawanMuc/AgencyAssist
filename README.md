@@ -15,6 +15,7 @@ Professional AI Content Creation Suite powered by Google Gemini & Veo.
 - **Webcam Integration**: Direct capture for Image, Video, and Storyboard assets.
 - **History & Persistence**: Full history tracking via Supabase for all generated content.
 - **Secure Cloud**: User authentication and RLS-protected storage.
+- **Password Reset**: Email-based password recovery with SMTP integration.
 
 ## Tech Stack
 
@@ -40,6 +41,9 @@ Professional AI Content Creation Suite powered by Google Gemini & Veo.
    # Supabase
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   
+   # App Configuration (for Production)
+   VITE_APP_URL=https://your-production-url.com  # Required for password reset emails
    ```
 
 3. **Database Setup**

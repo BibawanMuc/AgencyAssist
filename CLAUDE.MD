@@ -16,6 +16,7 @@
 
 - **Status:** Maintenance & Polishing
 - **Recent Fixes (Feb 2026):**
+  - **Password Reset**: Vollständige Passwort-Zurücksetzen-Funktion mit E-Mail-Integration (Gmail SMTP)
   - Standardized all Image Generation to use `gemini-3-pro-image-preview` (via `ImageModel` alias) to resolve 404/Empty errors with Flash/Imagen models.
   - Implemented auto-logout for `403 Forbidden` / `Not authenticated` errors across all generator pages (`ThumbGen`, `ImageGen`, `VideoGen`, `StoryGen`).
   - Fixed `StoryGen` 404 errors by migrating from `FLASH` to `PRO` model system-wide.
@@ -36,6 +37,7 @@ Das Projekt verfügt nun über eine vollständige Supabase-Integration, persiste
    - Auth Context (`src/contexts/AuthContext.tsx`) with `useAuth` hook
    - Type-safe User mapping
    - Login & Signup UI (`src/components/auth/`)
+   - **Password Reset**: ForgotPasswordPage & ResetPasswordPage mit E-Mail-Versand
    - Protected Route Logic
 
 3. **Backend Services (Direct Client)**
@@ -122,7 +124,14 @@ API_KEY=AIzaSy...                 # Google AI Studio Key (nutzbar für Flash, Pr
 # Supabase Configuration
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsIn...
+
+# App Configuration (für Production)
+VITE_APP_URL=https://px-helper.labs-schickeria.com  # Für korrekte Password Reset Links
 ```
+
+**Wichtig für Password Reset:**
+- `VITE_APP_URL` muss auf die Production-URL zeigen
+- Ohne diese Variable zeigen Password Reset Links auf `localhost`
 
 ---
 
