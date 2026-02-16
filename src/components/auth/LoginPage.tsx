@@ -95,6 +95,16 @@ const LoginPage: React.FC = () => {
                   placeholder="••••••••"
                 />
               </div>
+              {/* Forgot Password Link */}
+              <div className="mt-2 text-right">
+                <button
+                  type="button"
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Passwort vergessen?
+                </button>
+              </div>
             </div>
           </div>
 

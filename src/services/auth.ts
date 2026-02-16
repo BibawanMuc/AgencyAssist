@@ -128,6 +128,33 @@ export async function updateUserMetadata(updates: { displayName?: string; photoU
   }
 }
 
+/**
+ * Send password reset email to the user
+ */
+export async function resetPassword(email: string): Promise<void> {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  });
+
+  if (error) {
+    throw new Error(getAuthErrorMessage(error.message));
+  }
+}
+
+/**
+ * Update password using the reset token from email link
+ * This should be called on the reset password page after user clicks email link
+ */
+export async function updatePasswordWithToken(newPassword: string): Promise<void> {
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword
+  });
+
+  if (error) {
+    throw new Error(getAuthErrorMessage(error.message));
+  }
+}
+
 
 /**
  * Convert Supabase/General Auth error codes to user-friendly messages
@@ -147,6 +174,9 @@ function getAuthErrorMessage(errorMessage: string): string {
   }
   if (lowerMsg.includes('too many requests')) {
     return 'Zu viele Anfragen. Bitte versuchen Sie es später erneut';
+  }
+  if (lowerMsg.includes('password') && lowerMsg.includes('weak')) {
+    return 'Das Passwort ist zu schwach. Bitte verwenden Sie mindestens 6 Zeichen';
   }
 
   // Default fallback
